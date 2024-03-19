@@ -38,9 +38,9 @@ class WebDataExtractor:
         with open(self.html_filename, 'r', encoding='utf-8') as file:
             soup = BeautifulSoup(file, 'html.parser')
 
-        # 提取表格数据
+        # Extract table data
         data = []
-        rows = soup.find_all('tr')[1:]  # 跳过标题行
+        rows = soup.find_all('tr')[1:]  # skip title row
         for row in rows:
             cols = row.find_all(['th', 'td'])
             year = int(cols[0].text)
@@ -49,7 +49,7 @@ class WebDataExtractor:
             percentage = float(cols[3].text.strip('%'))
             data.append([year, matches, total, percentage])
 
-        # 转换为DataFrame
+        # Convert to DataFrame
         df = pd.DataFrame(data, columns=['Year', 'Matches', 'Total', 'Percentage'])
         self.save_table(df)
         return df
@@ -132,7 +132,7 @@ class WebDataAnalyzer:
 
         fig, ax1 = plt.subplots(figsize=(16, 9))
 
-        # 分配颜色：Buffer Overflow为红色,其他漏洞为不同的浅色
+        # Distribution colour: Buffer Overflow is red, other vulnerabilities are different light colours.
         other_vuls = [vul for vul in self.data['Vulnerability'].unique() if vul != 'Buffer Overflow']
         colors = plt.cm.Pastel1(np.linspace(0, 1, len(other_vuls)))
         vul_colors = {vul: colors[i] for i, vul in enumerate(other_vuls)}
@@ -159,8 +159,7 @@ class WebDataAnalyzer:
                 vul_data = grouped_data[grouped_data['Vulnerability'] == vul]
                 matches_by_year = vul_data.set_index('Year')['Matches'].reindex(years, fill_value=0)
                 ax1.bar(years, matches_by_year, bottom=bottom_array, color=vul_colors[vul], label=vul, width=0.4, alpha=0.7)
-                # 添加比例标注
-                # 计算标注的高度位置
+
                 percentage_by_year = vul_data.set_index('Year')['Percentage'].reindex(years, fill_value=0)
                 for year, percentage, match in zip(years, percentage_by_year, matches_by_year):
                     ax1.annotate(f"{percentage:.1f}%", (year, bottom_array[year - years[0]] + match), color=vul_colors[vul], xytext=(0, 3), textcoords='offset points', ha='center', va='bottom', fontsize=8)
@@ -178,7 +177,7 @@ class WebDataAnalyzer:
 
                 matches_by_year = vul_data.set_index('Year')['Matches'].reindex(years, fill_value=0)
                 ax1.plot(years, matches_by_year, color=vul_colors[vul], linestyle=linestyle, marker='o', linewidth=linewidth, label=label)
-                # 在折线图上标注比例数字
+                # Scale figures on line graphs
                 percentage_by_year = vul_data.set_index('Year')['Percentage'].reindex(years, fill_value=0)
                 for year, percentage in zip(years, percentage_by_year):
                     ax1.annotate(f"{percentage:.1f}%", (year, matches_by_year[year]), color=vul_colors[vul], xytext=(0, 5), textcoords='offset points', ha='center', va='bottom', fontsize=8)
