@@ -139,31 +139,47 @@ class WebDataAnalyzer:
         vul_colors['Buffer Overflow'] = 'red'
 
         filename = ""
+        bottom_array = []
         if analysis_type == AnalysisType.PROPORTIONAL:
             filename = "plot/Proportional_Analysis.png"
-
             bo_data = grouped_data[grouped_data['Vulnerability'] == 'Buffer Overflow']
             bo_matches_by_year = bo_data.set_index('Year')['Matches'].reindex(years, fill_value=0)
+            bottom_array = [0 for i in range(len(bo_matches_by_year))]
+            # print(len(bottom_array))
             ax1.bar(years, bo_matches_by_year, color='red', label='Buffer Overflow', width=0.4, alpha=1.0)
-            bottom_array = bo_matches_by_year.values
+            bo_percentage_by_year = bo_data.set_index('Year')['Percentage'].reindex(years, fill_value=0)
 
+            for year, percentage, match in zip(years, bo_percentage_by_year, bo_matches_by_year):
+                ax1.annotate(f"{percentage:.1f}%", (year, bottom_array[year - years[0]] + match), color='red', xytext=(0, 3), textcoords='offset points', ha='center', va='bottom', fontsize=8)
+
+            bottom_array = bo_matches_by_year.values
+            
+            # print(len(bottom_array))
             for vul in other_vuls:
                 vul_data = grouped_data[grouped_data['Vulnerability'] == vul]
                 matches_by_year = vul_data.set_index('Year')['Matches'].reindex(years, fill_value=0)
                 ax1.bar(years, matches_by_year, bottom=bottom_array, color=vul_colors[vul], label=vul, width=0.4, alpha=0.7)
+                # 添加比例标注
+                # 计算标注的高度位置
+                percentage_by_year = vul_data.set_index('Year')['Percentage'].reindex(years, fill_value=0)
+                for year, percentage, match in zip(years, percentage_by_year, matches_by_year):
+                    ax1.annotate(f"{percentage:.1f}%", (year, bottom_array[year - years[0]] + match), color=vul_colors[vul], xytext=(0, 3), textcoords='offset points', ha='center', va='bottom', fontsize=8)
+
                 bottom_array += matches_by_year.values
+
         elif analysis_type == AnalysisType.TREND:
             filename = "plot/Trend_Analysis.png"
 
             for vul in self.data['Vulnerability'].unique():
                 vul_data = grouped_data[grouped_data['Vulnerability'] == vul]
-                matches_by_year = vul_data.set_index('Year')['Matches'].reindex(years, fill_value=0)
-                percentage_by_year = vul_data.set_index('Year')['Percentage'].reindex(years, fill_value=0)
                 linestyle = '-' if vul == 'Buffer Overflow' else "--"
                 linewidth = 2 if vul == 'Buffer Overflow' else 1
                 label = f"{vul} ({linestyle})"
+
+                matches_by_year = vul_data.set_index('Year')['Matches'].reindex(years, fill_value=0)
                 ax1.plot(years, matches_by_year, color=vul_colors[vul], linestyle=linestyle, marker='o', linewidth=linewidth, label=label)
                 # 在折线图上标注比例数字
+                percentage_by_year = vul_data.set_index('Year')['Percentage'].reindex(years, fill_value=0)
                 for year, percentage in zip(years, percentage_by_year):
                     ax1.annotate(f"{percentage:.1f}%", (year, matches_by_year[year]), color=vul_colors[vul], xytext=(0, 5), textcoords='offset points', ha='center', va='bottom', fontsize=8)
 
@@ -174,5 +190,3 @@ class WebDataAnalyzer:
         ax1.legend()
         plt.tight_layout()
         plt.savefig(filename)
-        plt.show()
-
