@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+
+
+<title>NVD - Statistics</title>
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="content-script-type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+<link href="/site-scripts/font-awesome/css/font-awesome.min.css"
+	type="text/css" rel="stylesheet" />
+<link href="/site-media/bootstrap/css/bootstrap.min.css"
+	type="text/css" rel="stylesheet" />
+<link href="/site-media/bootstrap/css/bootstrap-theme.min.css"
+	type="text/css" rel="stylesheet" />
+<link
+	href="/site-scripts/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css"
+	type="text/css" rel="stylesheet" />
+
+
+<link href="/site-media/css/nist-fonts.css" type="text/css"
+	rel="stylesheet" />
+<link href="/site-media/css/base-style.css" type="text/css"
+	rel="stylesheet" />
+<link href="/site-media/css/media-resize.css" type="text/css"
+	rel="stylesheet" />
+
+
+<meta name="theme-color" content="#000000">
+
+
+<script src="/site-scripts/jquery/dist/jquery.min.js"
+	type="text/javascript"></script>
+<script src="/site-scripts/jquery-visible/jquery.visible.min.js"
+	type="text/javascript"></script>
+<script src="/site-scripts/underscore/underscore-min.js"
+	type="text/javascript"></script>
+<script src="/site-media/bootstrap/js/bootstrap.js"
+	type="text/javascript"></script>
+<script src="/site-scripts/moment/min/moment.min.js"
+	type="text/javascript"></script>
+<script
+	src="/site-scripts/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"
+	type="text/javascript"></script>
+
+
+<script src="/site-media/js/megamenu.js" type="text/javascript"></script>
+<script src="/site-media/js/nist-exit-script.js"
+	type="text/javascript"></script>
+<script src="/site-media/js/forms.js" type="text/javascript"></script>
+
+<script
+	src="/site-media/js/federated-analytics.all.min.js?agency=NIST&amp;subagency=nvd&amp;pua=UA-37115410-41&amp;yt=true"
+	type="text/javascript" id="_fed_an_js_tag"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4KKFZP12LQ"></script>
+<script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-4KKFZP12LQ'); </script>
+
+
+<style id="antiClickjack">
+body>* {
+	display: none !important;
+}
+
+#antiClickjack {
+	display: block !important;
+}
+</style>
+<noscript>
+	<style id="antiClickjackNoScript">
+body>* {
+	display: block !important;
+}
+
+#antiClickjack {
+	display: none !important;
+}
+</style>
+</noscript>
+<script type="text/javascript" id="antiClickjackScript">
+	if (self === top) {
+		// no clickjacking
+		var antiClickjack = document.getElementById("antiClickjack");
+		antiClickjack.parentNode.removeChild(antiClickjack);
+	} else {
+		setTimeout(tryForward(), 5000);
+	}
+
+	function tryForward() {
+		top.location = self.location;
+	}
+</script>
+<meta charset="UTF-8">
+
+<link href="/site-media/css/nvd-style.css" type="text/css"
+	rel="stylesheet" />
+<link href="/site-media/images/favicons/apple-touch-icon.png"
+	rel="apple-touch-icon" type="image/png" sizes="180x180" />
+<link href="/site-media/images/favicons/favicon-32x32.png"
+	rel="icon" type="image/png" sizes="32x32" />
+<link href="/site-media/images/favicons/favicon-16x16.png"
+	rel="icon" type="image/png" sizes="16x16" />
+<link href="/site-media/images/favicons/manifest.json"
+	rel="manifest" />
+<link href="/site-media/images/favicons/safari-pinned-tab.svg"
+	rel="mask-icon" color="#000000" />
+<link href="/site-media/images/favicons/favicon.ico"
+	rel="shortcut icon" />
+<meta name="msapplication-config" content="/site-media/images/favicons/browserconfig.xml" />
+<link href="/site-media/images/favicons/favicon.ico"
+	rel="shortcut icon" type="image/x-icon" />
+<link href="/site-media/images/favicons/favicon.ico" rel="icon"
+	type="image/x-icon" />
+<meta charset="UTF-8">
+<link href="/site-media/css/visualizations/graphs.css"  type="text/css" rel="stylesheet" />
+<script src="/site-media/js/visualizations/d3.js" type="text/javascript"></script>
+<script src="/site-media/js/visualizations/nvd3.js" type="text/javascript"></script>
+<script src="/site-media/js/visualizations/vulnSearchStatisticsCount.js" type="text/javascript"></script>
+<script src="/site-media/js/visualizations/vulnSearchStatisticsPercentage.js" type="text/javascript"></script>
+
+</head>
+<body>
+	<header role="banner" title="Site Banner">
+		<div id="antiClickjack" style="display: none">
+			<h1>You are viewing this page in an unauthorized frame window.</h1>
+			<p>
+		This is a potential security issue, you are being redirected to 
+		<a href="https://nvd.nist.gov">https://nvd.nist.gov</a>
+	</p>
+		</div>
+		<div>
+		<section class="usa-banner" aria-label="Official government website">
+		    <div class="usa-accordion container">
+		        <header class="usa-banner__header">
+		            <noscript>
+		                <p style="font-size: 0.85rem; font-weight: bold;">You have JavaScript disabled. This site requires JavaScript to be enabled for complete site functionality.</p>
+		            </noscript>
+		            <img class="usa-banner__header-flag" 
+		            	src="/site-media/images/usbanner/us_flag_small.png" alt="U.S. flag">
+		            &nbsp;
+		            <span class="usa-banner__header-text">An official website of the United States government</span>
+		
+		            <button id="gov-banner-button" class="usa-accordion__button usa-banner__button" data-toggle="collapse" data-target="#gov-banner" aria-expanded="false" aria-controls="gov-banner">
+		                <span class="usa-banner__button-text">Here's how you know</span>
+		            </button>
+		        </header>
+		        <div class="usa-banner__content usa-accordion__content collapse" role="tabpanel" id="gov-banner" aria-expanded="true">
+		            <div class="row">
+		                <div class="col-md-5 col-sm-12">
+		                    <div class="row">
+		                        <div class="col-sm-2 col-xs-3">
+		                            <img class="usa-banner__icon usa-media-block__img" 
+		                            	src="/site-media/images/usbanner/icon-dot-gov.svg" alt="Dot gov">
+		                        </div>
+		                        <div class="col-sm-10 col-xs-9">
+		                            <p>
+		                                <strong>Official websites use .gov</strong>
+		                                <br>
+		                                A <strong>.gov</strong> website belongs to an official government organization in the United States.
+		                            </p>
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="col-md-5 col-sm-12">
+		                    <div class="row">
+		                        <div class="col-sm-2 col-xs-3">
+		                            <img class="usa-banner__icon usa-media-block__img" 
+		                            	src="/site-media/images/usbanner/icon-https.svg" alt="Https">
+		                        </div>
+		                        <div class="col-sm-10 col-xs-9">
+		                        <p>
+		                            <strong>Secure .gov websites use HTTPS</strong>
+		                            <br>
+		                            A <strong>lock</strong> (<img class="usa-banner__lock" 
+		                            	src="/site-media/images/usbanner/lock.svg" alt="Dot gov">) or <strong>https://</strong> means you've safely connected to the .gov website. Share sensitive information only on official, secure websites.
+		                        </p>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</section>
+	</div>
+		<div>
+		<div>
+	<nav id="navbar" class="navbar">
+		<div id="nist-menu-container" class="container">
+			<div class="row">
+				<!-- Brand -->
+				<div class="col-xs-6 col-md-4 navbar-header"
+					style="height:104px">
+					<a class="navbar-brand" 
+						href="https://www.nist.gov" 
+						target="_blank" rel="noopener noreferrer"
+						id="navbar-brand-image"
+						style="padding-top: 36px">
+
+						<img alt="National Institute of Standards and Technology" 
+										src="/site-media/images/nist/nist-logo.svg" 
+										width="110" height="30">
+					</a>
+				</div>
+				<div class="col-xs-6 col-md-8 navbar-nist-logo">
+					<span id="nvd-menu-button" class="pull-right" style="margin-top: 26px"> <a href="#">
+							<span class="fa fa-bars"></span> <span id="nvd-menu-full-text"><span
+								class="hidden-xxs">NVD </span>MENU</span>
+					</a>
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-menu-row container">
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div id="main-menu-drop" class="col-lg-12" style="display: none;">
+				<ul>
+
+					<li><a href="/general"> General <span
+							class="expander fa fa-plus" id="nvd-header-menu-general"
+							data-expander-name="general" data-expanded="false"> <span
+								class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="general">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/general/nvd-dashboard">NVD Dashboard</a>
+									</p>
+									<p>
+										<a href="/general/news">News</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/general/faq">FAQ</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/general/visualizations">Visualizations</a> 
+									</p>
+									<p>
+										<a href="/general/legal-disclaimer">Legal Disclaimer</a> 
+									</p>
+								</div>
+							</div>
+						</div></li>
+					<li><a href="/vuln"> Vulnerabilities <span
+							class="expander fa fa-plus"
+							id="nvd-header-menu-vulnerabilities"
+							data-expander-name="vulnerabilities" data-expanded="false">
+								<span class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="vulnerabilities">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln/search">Search &amp; Statistics</a>
+									</p>
+									<p>
+										<a href="/vuln/categories">Weakness Types</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln/data-feeds">Legacy Data Feeds</a>
+									</p>
+									<p>
+										<a href="/vuln/vendor-comments">Vendor Comments</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln/cvmap">CVMAP</a>
+									</p>
+								</div>
+							</div>
+						</div></li>
+					<li><a href="/vuln-metrics/cvss#"> Vulnerability Metrics <span
+							class="expander fa fa-plus" id="nvd-header-menu-metrics"
+							data-expander-name="metrics" data-expanded="false"> <span
+								class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="metrics">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln-metrics/cvss/v3-calculator">CVSS v3.x
+											Calculators</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln-metrics/cvss/v2-calculator">CVSS v2.0
+											Calculator</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4"></div>
+							</div>
+						</div></li>
+					<li><a href="/products"> Products <span
+							class="expander fa fa-plus" id="nvd-header-menu-products"
+							data-expander-name="products" data-expanded="false"> <span
+								class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="products">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/products/cpe">CPE Dictionary</a>
+									</p>
+									<p>
+										<a href="/products/cpe/search">CPE Search</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/products/cpe/statistics">CPE Statistics</a>
+									</p>
+									<p>
+										<a href="/products/swid">SWID</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4"></div>
+							</div>
+						</div></li>
+					<li>
+						<a href="/developers">Developers<span
+								class="expander fa fa-plus" id="nvd-header-menu-developers"
+								data-expander-name="developers" data-expanded="false"> <span
+									class="element-invisible">Expand or Collapse</span>
+							</span>
+						</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="developers">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/developers/start-here">Start Here</a>
+									</p>
+									<p>
+										<a href="/developers/request-an-api-key">Request an API Key</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/developers/vulnerabilities">Vulnerabilities</a>
+									</p>
+									<p>
+										<a href="/developers/products">Products</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/developers/data-sources">Data Sources</a>
+									</p>
+									<p>
+										<a href="/developers/terms-of-use">Terms of Use</a>
+									</p>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li><a href="/contact"> Contact NVD </a></li>
+					<li><a href="/other"> Other Sites <span
+							class="expander fa fa-plus" id="nvd-header-menu-othersites"
+							data-expander-name="otherSites" data-expanded="false"> <span
+								class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="otherSites">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="https://ncp.nist.gov">Checklist (NCP) Repository</a>
+									</p>
+									<p>
+										<a href="https://ncp.nist.gov/cce">Configurations (CCE)</a>
+									</p>
+									<p>
+										<a href="https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search">800-53 Controls</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a
+											href="https://csrc.nist.gov/projects/scap-validation-program">SCAP
+											Validated Tools</a>
+									</p>
+									<p>
+										<a
+											href="https://csrc.nist.gov/projects/security-content-automation-protocol">SCAP</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a
+											href="https://csrc.nist.gov/projects/united-states-government-configuration-baseline">USGCB</a>
+									</p>
+								</div>
+							</div>
+						</div></li>
+
+					<li><a href="/search"> Search <span
+							class="expander fa fa-plus" id="nvd-header-menu-search"
+							data-expander-name="search" data-expanded="false"> <span
+								class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="search">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln/search">Vulnerability Search</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/products/cpe/search">CPE Search</a>
+									</p>
+								</div>
+							</div>
+						</div></li>
+
+
+
+
+				</ul>
+			</div>
+			<!-- /#mobile-nav-container -->
+		</div>
+
+	</nav>
+	<section id="itl-header" class="has-menu">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12 col-md-8">
+					<h2 class="hidden-xs hidden-sm">
+						<a href="https://www.nist.gov/itl" target="_blank" rel="noopener noreferrer">Information Technology Laboratory</a>
+					</h2>
+			 		<h1 class="hidden-xs hidden-sm">
+						<a id="nvd-header-link"
+						  href="/">National Vulnerability Database</a>
+					</h1>
+					<h1 class="hidden-xs text-center hidden-md hidden-lg"
+						>National Vulnerability Database</h1>
+					<h1 class="hidden-sm hidden-md hidden-lg text-center"
+						>NVD</h1>
+				
+				</div>
+				<div class="col-sm-12 col-md-4">
+					<a style="width: 100%; text-align: center; display: block;padding-top: 14px">
+						<img id="img-logo-nvd-lg" 
+							alt="National Vulnerability Database" 
+							src="/site-media/images/F_NIST-Logo-NVD-white.svg" 
+							width="500" height="100">
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+		
+</div>
+	</div>
+	</header>
+	<main>
+		<div>
+		<div id="body-section" class="container">
+			<div class="row">
+				<ol class="breadcrumb">
+					<li><a href="/vuln" class="CMSBreadCrumbsLink">Vulnerabilities</a><a href="/vuln/search" class="CMSBreadCrumbsLink">Search And Statistics</a></li>
+				</ol>
+			</div>
+			<div>
+
+		
+
+
+		<div id="vulnerability-statistics-results-div">
+
+			<!-- Heading of Page -->
+
+			<h2>Statistics Results <small><a
+					href="/vuln/search?results_type=statistics&amp;query=denial+of+service&amp;search_type=all&amp;form_type=Basic&amp;isCpeNameSearch=false"
+					id="refine-search-anchor" data-testid="vuln-refine-link"><span
+						class="refineSearch">(Refine Search)</span></a></small>
+			</h2>
+
+
+
+
+			<!-- Top row with search params and pagination -->
+
+			<p class="lead">Below are a table and graphs with data matching
+				the characteristics you specified on the Statistics Query Page.</p>
+			<strong class="h4Size">Search Parameters:</strong>
+
+			<ul>
+
+				<li data-testid="vuln-params-results_type"><span
+					class="searchParamLabel"
+					data-testid="vuln-params-results_type-label">Results Type: </span> <span
+					data-testid="vuln-params-results_type-value">Statistics</span> 
+					</li>
+
+				<li data-testid="vuln-params-query"><span
+					class="searchParamLabel"
+					data-testid="vuln-params-query-label">Keyword (text search): </span> <span
+					data-testid="vuln-params-query-value">denial of service</span> 
+					</li>
+
+				<li data-testid="vuln-params-search_type"><span
+					class="searchParamLabel"
+					data-testid="vuln-params-search_type-label">Search Type: </span> <span
+					data-testid="vuln-params-search_type-value">Search All</span> 
+					</li>
+
+				
+
+				<li data-testid="vuln-params-isCpeNameSearch"><span
+					class="searchParamLabel"
+					data-testid="vuln-params-isCpeNameSearch-label">CPE Name Search: </span> <span
+					data-testid="vuln-params-isCpeNameSearch-value">false</span> 
+					</li>
+			</ul>
+			
+			
+			<div id="NVd3CanvasVulnCountDistribution" class="NVd3Canvas"></div>
+
+        
+        	<div id="NVd3CanvasVulnPercentageDistribution" class="NVd3Canvas"></div>
+        
+        
+			<input id="vulnStatisticsJsonHidden" type="hidden" value="{&quot;statistics&quot;:[{&quot;year&quot;:1992,&quot;matchCount&quot;:2,&quot;totalCount&quot;:13,&quot;matchPercent&quot;:15.384615384615385},{&quot;year&quot;:1993,&quot;matchCount&quot;:1,&quot;totalCount&quot;:13,&quot;matchPercent&quot;:7.6923076923076925},{&quot;year&quot;:1994,&quot;matchCount&quot;:2,&quot;totalCount&quot;:25,&quot;matchPercent&quot;:8.0},{&quot;year&quot;:1995,&quot;matchCount&quot;:0,&quot;totalCount&quot;:25,&quot;matchPercent&quot;:0.0},{&quot;year&quot;:1996,&quot;matchCount&quot;:6,&quot;totalCount&quot;:74,&quot;matchPercent&quot;:8.108108108108109},{&quot;year&quot;:1997,&quot;matchCount&quot;:38,&quot;totalCount&quot;:252,&quot;matchPercent&quot;:15.079365079365079},{&quot;year&quot;:1998,&quot;matchCount&quot;:60,&quot;totalCount&quot;:246,&quot;matchPercent&quot;:24.390243902439025},{&quot;year&quot;:1999,&quot;matchCount&quot;:177,&quot;totalCount&quot;:894,&quot;matchPercent&quot;:19.798657718120804},{&quot;year&quot;:2000,&quot;matchCount&quot;:257,&quot;totalCount&quot;:1019,&quot;matchPercent&quot;:25.220804710500488},{&quot;year&quot;:2001,&quot;matchCount&quot;:403,&quot;totalCount&quot;:1676,&quot;matchPercent&quot;:24.045346062052506},{&quot;year&quot;:2002,&quot;matchCount&quot;:497,&quot;totalCount&quot;:2156,&quot;matchPercent&quot;:23.051948051948052},{&quot;year&quot;:2003,&quot;matchCount&quot;:381,&quot;totalCount&quot;:1527,&quot;matchPercent&quot;:24.95088408644401},{&quot;year&quot;:2004,&quot;matchCount&quot;:580,&quot;totalCount&quot;:2451,&quot;matchPercent&quot;:23.663810689514484},{&quot;year&quot;:2005,&quot;matchCount&quot;:838,&quot;totalCount&quot;:4932,&quot;matchPercent&quot;:16.991078669910785},{&quot;year&quot;:2006,&quot;matchCount&quot;:893,&quot;totalCount&quot;:6608,&quot;matchPercent&quot;:13.513922518159807},{&quot;year&quot;:2007,&quot;matchCount&quot;:1100,&quot;totalCount&quot;:6516,&quot;matchPercent&quot;:16.881522406384285},{&quot;year&quot;:2008,&quot;matchCount&quot;:894,&quot;totalCount&quot;:5632,&quot;matchPercent&quot;:15.873579545454545},{&quot;year&quot;:2009,&quot;matchCount&quot;:1034,&quot;totalCount&quot;:5732,&quot;matchPercent&quot;:18.039078855547803},{&quot;year&quot;:2010,&quot;matchCount&quot;:1097,&quot;totalCount&quot;:4639,&quot;matchPercent&quot;:23.64733778831645},{&quot;year&quot;:2011,&quot;matchCount&quot;:1219,&quot;totalCount&quot;:4150,&quot;matchPercent&quot;:29.373493975903614},{&quot;year&quot;:2012,&quot;matchCount&quot;:1421,&quot;totalCount&quot;:5288,&quot;matchPercent&quot;:26.872163388804843},{&quot;year&quot;:2013,&quot;matchCount&quot;:1454,&quot;totalCount&quot;:5187,&quot;matchPercent&quot;:28.031617505301714},{&quot;year&quot;:2014,&quot;matchCount&quot;:1597,&quot;totalCount&quot;:7937,&quot;matchPercent&quot;:20.12095250094494},{&quot;year&quot;:2015,&quot;matchCount&quot;:1792,&quot;totalCount&quot;:6487,&quot;matchPercent&quot;:27.624479728688144},{&quot;year&quot;:2016,&quot;matchCount&quot;:2025,&quot;totalCount&quot;:6447,&quot;matchPercent&quot;:31.40995812005584},{&quot;year&quot;:2017,&quot;matchCount&quot;:3122,&quot;totalCount&quot;:14643,&quot;matchPercent&quot;:21.320767602267296},{&quot;year&quot;:2018,&quot;matchCount&quot;:1853,&quot;totalCount&quot;:16509,&quot;matchPercent&quot;:11.224180749893996},{&quot;year&quot;:2019,&quot;matchCount&quot;:1349,&quot;totalCount&quot;:17305,&quot;matchPercent&quot;:7.795434845420399},{&quot;year&quot;:2020,&quot;matchCount&quot;:1363,&quot;totalCount&quot;:18350,&quot;matchPercent&quot;:7.427792915531335},{&quot;year&quot;:2021,&quot;matchCount&quot;:1831,&quot;totalCount&quot;:20155,&quot;matchPercent&quot;:9.084594393450757},{&quot;year&quot;:2022,&quot;matchCount&quot;:2044,&quot;totalCount&quot;:25050,&quot;matchPercent&quot;:8.159680638722556},{&quot;year&quot;:2023,&quot;matchCount&quot;:2057,&quot;totalCount&quot;:28829,&quot;matchPercent&quot;:7.135176384890214},{&quot;year&quot;:2024,&quot;matchCount&quot;:476,&quot;totalCount&quot;:7494,&quot;matchPercent&quot;:6.351748065118762}]}" />
+	
+	<strong>Raw Data</strong>
+	<table class="table table-striped table-hover">
+		<thead>
+			<tr>
+			    <th>Year</th>
+			    <th>Matches</th>
+                <th>Total</th>
+			    <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+        
+            <tr >
+			    <th>1992</th>
+			    <td >2</td>
+                <td >13</td>
+			    <td >15.38%</td>
+            </tr>
+        
+            <tr >
+			    <th>1993</th>
+			    <td >1</td>
+                <td >13</td>
+			    <td >7.69%</td>
+            </tr>
+        
+            <tr >
+			    <th>1994</th>
+			    <td >2</td>
+                <td >25</td>
+			    <td >8.00%</td>
+            </tr>
+        
+            <tr >
+			    <th>1995</th>
+			    <td >0</td>
+                <td >25</td>
+			    <td >0.00%</td>
+            </tr>
+        
+            <tr >
+			    <th>1996</th>
+			    <td >6</td>
+                <td >74</td>
+			    <td >8.11%</td>
+            </tr>
+        
+            <tr >
+			    <th>1997</th>
+			    <td >38</td>
+                <td >252</td>
+			    <td >15.08%</td>
+            </tr>
+        
+            <tr >
+			    <th>1998</th>
+			    <td >60</td>
+                <td >246</td>
+			    <td >24.39%</td>
+            </tr>
+        
+            <tr >
+			    <th>1999</th>
+			    <td >177</td>
+                <td >894</td>
+			    <td >19.80%</td>
+            </tr>
+        
+            <tr >
+			    <th>2000</th>
+			    <td >257</td>
+                <td >1019</td>
+			    <td >25.22%</td>
+            </tr>
+        
+            <tr >
+			    <th>2001</th>
+			    <td >403</td>
+                <td >1676</td>
+			    <td >24.05%</td>
+            </tr>
+        
+            <tr >
+			    <th>2002</th>
+			    <td >497</td>
+                <td >2156</td>
+			    <td >23.05%</td>
+            </tr>
+        
+            <tr >
+			    <th>2003</th>
+			    <td >381</td>
+                <td >1527</td>
+			    <td >24.95%</td>
+            </tr>
+        
+            <tr >
+			    <th>2004</th>
+			    <td >580</td>
+                <td >2451</td>
+			    <td >23.66%</td>
+            </tr>
+        
+            <tr >
+			    <th>2005</th>
+			    <td >838</td>
+                <td >4932</td>
+			    <td >16.99%</td>
+            </tr>
+        
+            <tr >
+			    <th>2006</th>
+			    <td >893</td>
+                <td >6608</td>
+			    <td >13.51%</td>
+            </tr>
+        
+            <tr >
+			    <th>2007</th>
+			    <td >1100</td>
+                <td >6516</td>
+			    <td >16.88%</td>
+            </tr>
+        
+            <tr >
+			    <th>2008</th>
+			    <td >894</td>
+                <td >5632</td>
+			    <td >15.87%</td>
+            </tr>
+        
+            <tr >
+			    <th>2009</th>
+			    <td >1034</td>
+                <td >5732</td>
+			    <td >18.04%</td>
+            </tr>
+        
+            <tr >
+			    <th>2010</th>
+			    <td >1097</td>
+                <td >4639</td>
+			    <td >23.65%</td>
+            </tr>
+        
+            <tr >
+			    <th>2011</th>
+			    <td >1219</td>
+                <td >4150</td>
+			    <td >29.37%</td>
+            </tr>
+        
+            <tr >
+			    <th>2012</th>
+			    <td >1421</td>
+                <td >5288</td>
+			    <td >26.87%</td>
+            </tr>
+        
+            <tr >
+			    <th>2013</th>
+			    <td >1454</td>
+                <td >5187</td>
+			    <td >28.03%</td>
+            </tr>
+        
+            <tr >
+			    <th>2014</th>
+			    <td >1597</td>
+                <td >7937</td>
+			    <td >20.12%</td>
+            </tr>
+        
+            <tr >
+			    <th>2015</th>
+			    <td >1792</td>
+                <td >6487</td>
+			    <td >27.62%</td>
+            </tr>
+        
+            <tr >
+			    <th>2016</th>
+			    <td >2025</td>
+                <td >6447</td>
+			    <td >31.41%</td>
+            </tr>
+        
+            <tr >
+			    <th>2017</th>
+			    <td >3122</td>
+                <td >14643</td>
+			    <td >21.32%</td>
+            </tr>
+        
+            <tr >
+			    <th>2018</th>
+			    <td >1853</td>
+                <td >16509</td>
+			    <td >11.22%</td>
+            </tr>
+        
+            <tr >
+			    <th>2019</th>
+			    <td >1349</td>
+                <td >17305</td>
+			    <td >7.80%</td>
+            </tr>
+        
+            <tr >
+			    <th>2020</th>
+			    <td >1363</td>
+                <td >18350</td>
+			    <td >7.43%</td>
+            </tr>
+        
+            <tr >
+			    <th>2021</th>
+			    <td >1831</td>
+                <td >20155</td>
+			    <td >9.08%</td>
+            </tr>
+        
+            <tr >
+			    <th>2022</th>
+			    <td >2044</td>
+                <td >25050</td>
+			    <td >8.16%</td>
+            </tr>
+        
+            <tr >
+			    <th>2023</th>
+			    <td >2057</td>
+                <td >28829</td>
+			    <td >7.14%</td>
+            </tr>
+        
+            <tr >
+			    <th>2024</th>
+			    <td >476</td>
+                <td >7494</td>
+			    <td >6.35%</td>
+            </tr>
+   
+        </tbody>
+    </table>
+    
+    
+	
+		</div>
+		</div>
+		</div>
+	</div>
+	</main>
+	<footer id="footer" role="contentinfo">
+		<div class="container">
+
+			<div class="row">
+				<div class="col-sm-12">
+					<ul class="social-list pull-right">
+						<li class="field-item service-twitter list-horiz"><a
+							href="https://twitter.com/NISTCyber" target="_blank" rel="noopener noreferrer"
+							class="social-btn social-btn--large extlink ext"> <i
+								class="fa fa-twitter fa-fw"><span class="element-invisible">twitter</span></i><span
+								class="ext"><span class="element-invisible"> (link
+										is external)</span></span>
+						</a></li>
+						<li class="field-item service-facebook list-horiz"><a
+							href="https://www.facebook.com/NIST" target="_blank" rel="noopener noreferrer"
+							class="social-btn social-btn--large extlink ext"> <i
+								class="fa fa-facebook fa-fw"><span class="element-invisible">facebook</span></i><span
+								class="ext"><span class="element-invisible"> (link
+										is external)</span></span></a></li>
+						<li class="field-item service-linkedin list-horiz"><a
+							href="https://www.linkedin.com/company/nist" target="_blank" rel="noopener noreferrer"
+							class="social-btn social-btn--large extlink ext"> <i
+								class="fa fa-linkedin fa-fw"><span class="element-invisible">linkedin</span></i><span
+								class="ext"><span class="element-invisible"> (link
+										is external)</span></span></a></li>
+						<li class="field-item service-youtube list-horiz"><a
+							href="https://www.youtube.com/user/USNISTGOV" target="_blank" rel="noopener noreferrer"
+							class="social-btn social-btn--large extlink ext"> <i
+								class="fa fa-youtube fa-fw"><span class="element-invisible">youtube</span></i><span
+								class="ext"><span class="element-invisible"> (link
+										is external)</span></span></a></li>
+						<li class="field-item service-rss list-horiz"><a
+							href="https://www.nist.gov/news-events/nist-rss-feeds"
+							target="_blank" rel="noopener noreferrer" class="social-btn social-btn--large extlink">
+								<i class="fa fa-rss fa-fw"><span class="element-invisible">rss</span></i>
+						</a></li>
+						<li class="field-item service-govdelivery list-horiz last"><a
+							href="https://public.govdelivery.com/accounts/USNIST/subscriber/new?qsp=USNIST_3"
+							target="_blank" rel="noopener noreferrer" class="social-btn social-btn--large extlink ext">
+								<i class="fa fa-envelope fa-fw"><span
+									class="element-invisible">govdelivery</span></i><span class="ext"><span
+									class="element-invisible"> (link is external)</span></span>
+						</a></li>
+					</ul>
+					<span class="hidden-xs"> <a
+						title="National Institute of Standards and Technology" rel="home"
+						class="footer-nist-logo"> <img
+							src="/site-media/images/nist/nist-logo.png"
+							alt="National Institute of Standards and Technology logo" />
+					</a>
+					</span>
+				</div>
+			</div>
+			<div class="row hidden-sm hidden-md hidden-lg">
+				<div class="col-sm-12">
+					<a href="https://www.nist.gov"
+						title="National Institute of Standards and Technology" rel="home"
+						target="_blank" rel="noopener noreferrer" class="footer-nist-logo"> <img
+						src="/site-media/images/nist/nist-logo.png"
+						alt="National Institute of Standards and Technology logo" />
+					</a>
+				</div>
+			</div>
+
+			<div class="row footer-contact-container">
+				<div class="col-sm-6">
+					<strong>HEADQUARTERS</strong>
+					<br>
+					100 Bureau Drive
+					<br>
+					Gaithersburg, MD 20899
+					<br>
+					<a href="tel:301-975-2000">(301) 975-2000</a>
+					<br>
+					<br>
+					<a href="mailto:nvd@nist.gov">Webmaster</a> | <a
+						href="https://www.nist.gov/about-nist/contact-us">Contact Us</a>
+					| <a href="https://www.nist.gov/about-nist/visit"
+						style="display: inline-block;">Our Other Offices</a>
+				</div>
+				<div class="col-sm-6">
+					<div class="pull-right"
+						style="text-align:right">
+						<strong>Incident Response Assistance and Non-NVD Related<br>Technical Cyber Security Questions:</strong>
+						<br>
+						US-CERT Security Operations Center
+						<br> Email: <a href="mailto:soc@us-cert.gov">soc@us-cert.gov</a>
+						<br> Phone:	1-888-282-0870
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+			    <nav title="Footer Navigation" role="navigation"
+			    	 class="row footer-bottom-links-container">
+			    <!-- https://github.com/usnistgov/nist-header-footer/blob/nist-pages/boilerplate-footer.html -->
+      				<p>
+			          <a href="https://www.nist.gov/oism/site-privacy">Site Privacy</a>
+			        |
+			          <a href="https://www.nist.gov/oism/accessibility">Accessibility</a>
+			        |
+			          <a href="https://www.nist.gov/privacy">Privacy Program</a>
+			        |
+			          <a href="https://www.nist.gov/oism/copyrights">Copyrights</a>
+			        |
+			          <a href="https://www.commerce.gov/vulnerability-disclosure-policy">Vulnerability Disclosure</a>
+			        |
+			          <a href="https://www.nist.gov/no-fear-act-policy">No Fear Act Policy</a>
+			        |
+			          <a href="https://www.nist.gov/foia">FOIA</a>
+			        |
+			          <a href="https://www.nist.gov/environmental-policy-statement">Environmental Policy</a>
+					|
+			          <a href="https://www.nist.gov/summary-report-scientific-integrity">Scientific Integrity</a>
+			        |
+			          <a href="https://www.nist.gov/nist-information-quality-standards">Information Quality Standards</a>
+			        |
+			          <a href="https://www.commerce.gov/">Commerce.gov</a>
+			        |
+			          <a href="https://www.science.gov/">Science.gov</a>
+			        |
+			          <a href="https://www.usa.gov/">USA.gov</a>
+            		</p>
+    			</nav>
+			</div>
+		</div>
+	</footer>
+</body>
+</html>

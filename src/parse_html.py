@@ -6,21 +6,53 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+class SecurityScoreType:
+    ANY = "ANY"
+    LOW = "LOW"
+    MEDIUM = "MEDIUM"
+    MEDIUM_HIGH = "MEDIUM_HIGH"
+    HIGH = "HIGH"
+    
+
+
+vul_keywords = [
+    'buffer overflow',
+    'injection vulnerability',  # Merging SQL Injection, Command Injection, etc. into Broader Injection Vulnerabilities
+    'cross-site scripting',  # XSS
+    'code execution',  # Combining Remote Code Execution, Command Execution, etc. for Code Execution Vulnerabilities
+    'denial of service',  # DoS vulnerability
+    'cross-site request forgery',  # Preserve CSRF, which is also a common security issue in web applications
+    'information disclosure',  # Retain the type of information leakage as it covers a wide range of vulnerabilities
+    'authentication issue'  # Merge authentication bypass, session management issues, etc. into authentication issues
+]
+
+scores = [
+    SecurityScoreType.ANY, 
+    SecurityScoreType.LOW, 
+    SecurityScoreType.MEDIUM, 
+    SecurityScoreType.MEDIUM_HIGH,
+    SecurityScoreType.HIGH, 
+]
+
+
 class WebDataExtractor:
     """
     A class for extracting vulnerability data from the web, saving it locally,
     and performing data analysis and visualization.
     """
         
-    def __init__(self, vul_name):
+    def __init__(self, vul_name, security_score: SecurityScoreType):
         """
         Initialize the WebDataExtractor with the given vulnerability name.
         """
-        self.url = f"https://nvd.nist.gov/vuln/search/statistics?form_type=Basic&results_type=statistics&query={vul_name.replace(' ', '+')}&search_type=all&isCpeNameSearch=false"
-        self.html_filename = f"html/{vul_name.replace(' ', '_')}.html"
-        self.csv_filename = f"data/{vul_name.replace(' ', '_')}.csv"
-        self.plt_filename = f"plot/{vul_name.replace(' ', '_')}.png"
-        self.vul_name = f"{vul_name.title()} Vulnerability"
+        if security_score == "ANY":
+            self.url = f"https://nvd.nist.gov/vuln/search/statistics?form_type=Basic&results_type=statistics&query={vul_name.replace(' ', '+')}&search_type=all&isCpeNameSearch=false"
+            
+        else:
+            self.url = f"https://nvd.nist.gov/vuln/search/statistics?form_type=Advanced&results_type=statistics&query={vul_name.replace(' ', '+')}&search_type=all&isCpeNameSearch=false&cvss_version=2&cvss_v2_severity={security_score}"
+        self.html_filename_with_score = f"{vul_name.replace(' ', '_')}-{security_score}.html"
+        self.html_dir_name = "html"
     
     def fetch_and_save_html(self):
         """
@@ -28,77 +60,61 @@ class WebDataExtractor:
         """
         response = requests.get(self.url)
         html_content = response.text
-        with open(self.html_filename, 'w', encoding='utf-8') as file:
+        with open(self.html_dir_name + '/'+ self.html_filename_with_score, 'w', encoding='utf-8') as file:
             file.write(html_content)
-    
-    def extract_table_data(self):
-        """
-        Parse the HTML file and extract the table data.
-        """
-        with open(self.html_filename, 'r', encoding='utf-8') as file:
-            soup = BeautifulSoup(file, 'html.parser')
-
-        # Extract table data
-        data = []
-        rows = soup.find_all('tr')[1:]  # skip title row
-        for row in rows:
-            cols = row.find_all(['th', 'td'])
-            year = int(cols[0].text)
-            matches = int(cols[1].text)
-            total = int(cols[2].text)
-            percentage = float(cols[3].text.strip('%'))
-            data.append([year, matches, total, percentage])
-
-        # Convert to DataFrame
-        df = pd.DataFrame(data, columns=['Year', 'Matches', 'Total', 'Percentage'])
-        self.save_table(df)
-        return df
-    
-    def save_table(self, df):
-        """
-        Save the extracted table data to a CSV file.
-        """
-        df.to_csv(self.csv_filename, index=False)
-
-    def analyze_and_plot(self, df):
-        """
-        Perform data analysis and create visualizations.
-        """
-        fig, ax1 = plt.subplots(figsize=(14, 8))
-
-        ax1.bar(df['Year'], df['Matches'], color='skyblue', label='Matches', width=0.4, align='center')
-        ax1.bar(df['Year']+0.4, df['Total'], color='lightgreen', label='Total', width=0.4, align='center')
-        ax1.set_xlabel('Year', fontsize=14)
-        ax1.set_ylabel('Count', fontsize=14)
-        ax1.tick_params(axis='y')
-        ax1.set_xticks(np.arange(min(df['Year']), max(df['Year'])+1, 5))
-        ax1.set_xticklabels(np.arange(min(df['Year']), max(df['Year'])+1, 5), rotation=45)
-
-        ax2 = ax1.twinx()
-        ax2.plot(df['Year'], df['Percentage'], color='red', marker='o', label='Percentage')
-        ax2.set_ylabel('Percentage', fontsize=14)
-        ax2.tick_params(axis='y')
-
-        lines, labels = ax1.get_legend_handles_labels()
-        lines2, labels2 = ax2.get_legend_handles_labels()
-        ax2.legend(lines + lines2, labels + labels2, loc='upper left')
-
-        plt.title(self.vul_name, fontsize=16)
-        plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-        plt.tight_layout()
-        self.save_plt()
-    
-    def save_plt(self):
-        plt.savefig(self.plt_filename)
-        plt.close()
-
-
-class AnalysisType(Enum):
-    PROPORTIONAL = "Proportional"
-    TREND = "Trend"
 
 
 class WebDataAnalyzer:
+    def __init__(self, vul_name):
+        """
+        Initialize the WebDataExtractor with the given vulnerability name.
+        """
+
+        self.html_filename_without_score = f"{vul_name.replace(' ', '_')}"
+        self.html_dir_name = "html"
+        self.csv_filename = f"data/{vul_name.replace(' ', '_')}.csv"
+        self.vul_name = f"{vul_name.title()}"
+
+
+    def extract_table_data(self):
+        aggregated_data = {}
+        security_levels = [ 
+            SecurityScoreType.ANY, 
+            SecurityScoreType.LOW, 
+            SecurityScoreType.MEDIUM, 
+            SecurityScoreType.MEDIUM_HIGH,
+            SecurityScoreType.HIGH
+        ]
+        columns = ['Year', 'Total', 'Percentage'] + security_levels
+
+        for filename in os.listdir(self.html_dir_name):
+
+            if filename.startswith(self.html_filename_without_score) and filename.endswith('.html'):
+                security_level = filename.split('-')[-1].replace('.html', '').strip().upper()
+
+                if security_level in security_levels:
+                    with open(os.path.join(self.html_dir_name, filename), 'r', encoding='utf-8') as file:
+                        soup = BeautifulSoup(file, 'html.parser')
+
+                    rows = soup.find_all('tr')[1:]  # Skip the title row
+                    for row in rows:
+                        cols = row.find_all(['th', 'td'])
+                        year, matches, total, percentage = int(cols[0].text), int(cols[1].text), int(cols[2].text), float(cols[3].text.strip('%'))
+
+                        if year not in aggregated_data:
+                            aggregated_data[year] = {col: 0 for col in columns}
+                        if security_level == "ANY":
+                            aggregated_data[year]['Year'] = year
+                            aggregated_data[year]['Total'] = total
+                            aggregated_data[year]['Percentage'] = percentage
+                        aggregated_data[year][security_level] = matches
+
+        df = pd.DataFrame(list(aggregated_data.values()), columns=columns)
+        df.to_csv(self.csv_filename, index=False)
+        print(f"Saved data to {self.csv_filename}")
+
+
+class WebDataPloter():
     """
     A class for analyzing vulnerability data from multiple CSV files and generating visualizations.
     """
@@ -108,84 +124,174 @@ class WebDataAnalyzer:
         Initialize the WebDataAnalyzer with the directory containing the CSV data files.
         """
         self.data_dir = data_dir
-        self.data = None
-    
-    def load_data(self):
+        self.data = {}
+        self.__load_data__()
+        
+
+
+    def __load_data__(self):
         """
         Load data from CSV files in the specified directory into a single DataFrame.
         """
-        data_frames = []
         for filename in os.listdir(self.data_dir):
             if filename.endswith(".csv"):
                 file_path = os.path.join(self.data_dir, filename)
-                vul_name = filename[:-4].replace("_", " ").title()
+                vul_name = filename[:-4].replace("_", " ")
                 df = pd.read_csv(file_path)
-                df['Vulnerability'] = vul_name
-                data_frames.append(df)
-        
-        self.data = pd.concat(data_frames, ignore_index=True)
+                df.fillna(0, inplace = True)
+                df.sort_values(by='Year', ascending=True, inplace=True)
+                df.reset_index(drop=True, inplace=True)
+                self.data[vul_name] = df
 
 
-    def analyze_and_plot(self, analysis_type):
-        grouped_data = self.data.groupby(['Year', 'Vulnerability']).sum().reset_index()
-        years = np.sort(self.data['Year'].unique())
+    def plot_csv(self):
+        """
+        Perform data analysis and create visualizations.
+        """
 
-        fig, ax1 = plt.subplots(figsize=(16, 9))
+        for vul_name in vul_keywords:
+            df = self.data[vul_name]
+            fig, ax1 = plt.subplots(figsize=(10, 6))
+            ax2 = ax1.twinx()
 
-        # Distribution colour: Buffer Overflow is red, other vulnerabilities are different light colours.
-        other_vuls = [vul for vul in self.data['Vulnerability'].unique() if vul != 'Buffer Overflow']
-        colors = plt.cm.Pastel1(np.linspace(0, 1, len(other_vuls)))
-        vul_colors = {vul: colors[i] for i, vul in enumerate(other_vuls)}
-        vul_colors['Buffer Overflow'] = 'red'
-
-        filename = ""
-        bottom_array = []
-        if analysis_type == AnalysisType.PROPORTIONAL:
-            filename = "plot/Proportional_Analysis.png"
-            bo_data = grouped_data[grouped_data['Vulnerability'] == 'Buffer Overflow']
-            bo_matches_by_year = bo_data.set_index('Year')['Matches'].reindex(years, fill_value=0)
-            bottom_array = [0 for i in range(len(bo_matches_by_year))]
-            # print(len(bottom_array))
-            ax1.bar(years, bo_matches_by_year, color='red', label='Buffer Overflow', width=0.4, alpha=1.0)
-            bo_percentage_by_year = bo_data.set_index('Year')['Percentage'].reindex(years, fill_value=0)
-
-            for year, percentage, match in zip(years, bo_percentage_by_year, bo_matches_by_year):
-                ax1.annotate(f"{percentage:.1f}%", (year, bottom_array[year - years[0]] + match), color='red', xytext=(0, 3), textcoords='offset points', ha='center', va='bottom', fontsize=8)
-
-            bottom_array = bo_matches_by_year.values
+            # 创建堆叠柱状图
+            bars = df.plot(kind='bar', x='Year', stacked=True, 
+                    y=['LOW', 'MEDIUM', 'HIGH'], 
+                    ax=ax1, width=0.8, alpha=0.75, colormap='viridis')
             
-            # print(len(bottom_array))
-            for vul in other_vuls:
-                vul_data = grouped_data[grouped_data['Vulnerability'] == vul]
-                matches_by_year = vul_data.set_index('Year')['Matches'].reindex(years, fill_value=0)
-                ax1.bar(years, matches_by_year, bottom=bottom_array, color=vul_colors[vul], label=vul, width=0.4, alpha=0.7)
+            
 
-                percentage_by_year = vul_data.set_index('Year')['Percentage'].reindex(years, fill_value=0)
-                for year, percentage, match in zip(years, percentage_by_year, matches_by_year):
-                    ax1.annotate(f"{percentage:.1f}%", (year, bottom_array[year - years[0]] + match), color=vul_colors[vul], xytext=(0, 3), textcoords='offset points', ha='center', va='bottom', fontsize=8)
+            # # 创建趋势线图
+            df.plot(y='Total', kind='line', ax=ax2, color='cornflowerblue', marker='x', linestyle='-', linewidth=2, label='Total Trend', zorder=9)
 
-                bottom_array += matches_by_year.values
+            # 设置比例注释
+            for i, total in enumerate(df['Total']):
+                ax2.annotate(f'{total}', (i, total), textcoords="offset points", xytext=(0,10), ha='center', fontsize=6, zorder=10)
 
-        elif analysis_type == AnalysisType.TREND:
-            filename = "plot/Trend_Analysis.png"
+            # 在堆叠柱状图的顶部添加数量和比例注释
+            for i, (rect, year, any, low, medium_high, pct) in enumerate(zip(bars.patches, df['Year'], df['ANY'], df["LOW"], df["MEDIUM_HIGH"], df['Percentage'])):
+                if pct > 0:
+                    height = any
+                    ax1.annotate(f'{any}\n{pct}%', (rect.get_x() + rect.get_width() / 2, height),
+                                textcoords="offset points", xytext=(0,30), ha='center', fontsize=6, arrowprops=dict(arrowstyle="<->", connectionstyle="arc3", color='lightgray'), zorder=10)
+                    if low + medium_high <= 10:
+                        ax1.bar(i, any, width=0.8, color='gray', alpha=0.75, zorder=10)
 
-            for vul in self.data['Vulnerability'].unique():
-                vul_data = grouped_data[grouped_data['Vulnerability'] == vul]
-                linestyle = '-' if vul == 'Buffer Overflow' else "--"
-                linewidth = 2 if vul == 'Buffer Overflow' else 1
-                label = f"{vul} ({linestyle})"
+            # 添加图例
+            ax1.legend(loc='upper left')
+            ax2.legend(loc='upper right')
 
-                matches_by_year = vul_data.set_index('Year')['Matches'].reindex(years, fill_value=0)
-                ax1.plot(years, matches_by_year, color=vul_colors[vul], linestyle=linestyle, marker='o', linewidth=linewidth, label=label)
-                # Scale figures on line graphs
-                percentage_by_year = vul_data.set_index('Year')['Percentage'].reindex(years, fill_value=0)
-                for year, percentage in zip(years, percentage_by_year):
-                    ax1.annotate(f"{percentage:.1f}%", (year, matches_by_year[year]), color=vul_colors[vul], xytext=(0, 5), textcoords='offset points', ha='center', va='bottom', fontsize=8)
+            # 设置标题和轴标签
+            ax1.set_title(f"{vul_name.title()}")
+            ax1.set_xlabel('Year')
+            ax1.set_ylabel('Count')
+            ax2.set_ylabel('Total Count / Percentage')
 
-        ax1.set_xlabel('Year')
-        ax1.set_ylabel('Number of Matches')
-        ax1.set_xticks(years)
-        ax1.set_xticklabels(years, rotation=45)
-        ax1.legend()
+            # 调整X轴标签
+            ax1.set_xticks(range(len(df['Year'])))
+            ax1.set_xticklabels(df['Year'], rotation=45)
+
+            # 显示图表
+            plt.tight_layout()
+            plt_filename = f"plot/{vul_name.replace(' ', '_')}.png"
+            plt.savefig(plt_filename, dpi=1080)
+
+
+    def plot_pie(self):
+        for vul_name in vul_keywords:
+            df = self.data[vul_name]
+            # 直接使用df，因为已经假定df只包含2022年的数据
+            df_2022 = df[df["Year"] == 2022]
+            df_2022_other = df_2022[SecurityScoreType.ANY] \
+                        - df_2022[SecurityScoreType.LOW] \
+                        - df_2022[SecurityScoreType.MEDIUM] \
+                        - df_2022[SecurityScoreType.HIGH]
+
+            # # 数据准备
+            labels = ["Low", 
+                    "Medium", 
+                    "High",
+                    "Other"
+            ]
+            sizes = [df_2022['LOW'].iloc[0],
+                    df_2022['MEDIUM'].iloc[0],
+                    df_2022['HIGH'].iloc[0],
+                    df_2022_other.iloc[0]
+            ]
+
+            colors = [
+                '#77DD77', # green
+                '#FDFD96', # yellow
+                '#FF6961', # red
+                '#CFCFC4'] # gray
+
+            explode = (0, 0, 0.1, 0)  # 突出显示'ANY'或'HIGH'
+
+            # # 绘制饼图
+            fig, ax = plt.subplots(figsize=(8, 8))
+            
+            wedges, texts, autotexts = ax.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%',
+                                    shadow=False, startangle=180, textprops={'fontsize': 14})
+            # 美化图例
+            ax.legend(wedges, labels,
+                    title="Security Levels",
+                    loc="center left",
+                    bbox_to_anchor=(1, 0, 0.5, 1))
+
+            plt.title(f'{vul_name} Security Level Proportions in 2022', fontsize=16, fontweight='bold')
+
+            plt.tight_layout()
+            plt_filename = f"plot/{vul_name.replace(' ', '_')}_Security_Level_Proportions_in_2022.png"
+            plt.savefig(plt_filename, dpi=1080)
+
+    def plot_analysis(self):
+
+        any_sums = {}
+        total = 0
+        for vul_name in vul_keywords:
+            if vul_name == "code execution":
+                continue
+            df = self.data[vul_name]
+            df_2023 = df[df['Year'] == 2023]  # 筛选2023年的记录
+            any_sum = df_2023['ANY'].sum()  # 计算ANY字段的总和
+            any_sums[vul_name] = any_sum  # 存储结果
+            total = df_2023['Total'].sum()
+
+        # 将结果转换为适用于饼状图的结构
+        labels = list(any_sums.keys()) + ["other"]
+        sizes = list(any_sums.values())
+        sizes = sizes + [total - sum(sizes)]
+
+        # print(labels, sizes)
+
+        color_scheme = {
+            'buffer overflow': '#ff6666', # 亮红色, 突出显示
+            'injection vulnerability': '#3498db', # 蓝色
+            'cross-site scripting': '#2ecc71', # 绿色
+            'denial of service': '#f1c40f', # 黄色
+            'cross-site request forgery': '#9b59b6', # 紫色
+            'information disclosure': '#34495e', # 深蓝色
+            'authentication issue': '#95a5a6', # 灰色
+            'other': '#7f8c8d', # 暗灰色
+        }
+
+        colors = [color_scheme[label] for label in labels]
+
+        explode = (0.1, 0, 0, 0, 0, 0, 0, 0)  # 突出显示'ANY'或'HIGH'
+
+        # # 绘制饼图
+        fig, ax = plt.subplots(figsize=(16, 9))
+        
+        wedges, texts, autotexts = ax.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%',
+                                shadow=False, startangle=180, textprops={'fontsize': 14})
+        # 美化图例
+        ax.legend(wedges, labels,
+                title="Security Levels",
+                loc="center left",
+                bbox_to_anchor=(1, 0, 0.5, 1))
+
+        plt.title(f'Vulnerable Type Proportions in 2023', fontsize=16, fontweight='bold')
+
         plt.tight_layout()
-        plt.savefig(filename)
+        plt_filename = f"plot/Vulnerable_Type_Proportions_in_2023.png"
+        plt.savefig(plt_filename, dpi=1080)
