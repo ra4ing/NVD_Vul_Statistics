@@ -35,7 +35,5 @@ if __name__ == '__main__':
     # get_data()
     # extract_csv()
     # plot_csv()
-    # plot_pie()
-    plot_analysis()
-
-    # analysis()
+    plot_pie()
+    # plot_analysis()

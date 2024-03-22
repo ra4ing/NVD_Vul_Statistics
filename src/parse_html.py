@@ -185,7 +185,7 @@ class WebDataPloter():
             ax1.set_title(f"{vul_name.title()}")
             ax1.set_xlabel('Year')
             ax1.set_ylabel('Count')
-            ax2.set_ylabel('Total Count / Percentage')
+            ax2.set_ylabel('Total Count')
 
             # 调整X轴标签
             ax1.set_xticks(range(len(df['Year'])))
@@ -202,30 +202,24 @@ class WebDataPloter():
             df = self.data[vul_name]
             # 直接使用df，因为已经假定df只包含2022年的数据
             df_2022 = df[df["Year"] == 2022]
-            df_2022_other = df_2022[SecurityScoreType.ANY] \
-                        - df_2022[SecurityScoreType.LOW] \
-                        - df_2022[SecurityScoreType.MEDIUM] \
-                        - df_2022[SecurityScoreType.HIGH]
 
             # # 数据准备
             labels = ["Low", 
                     "Medium", 
                     "High",
-                    "Other"
             ]
             sizes = [df_2022['LOW'].iloc[0],
                     df_2022['MEDIUM'].iloc[0],
                     df_2022['HIGH'].iloc[0],
-                    df_2022_other.iloc[0]
             ]
 
             colors = [
                 '#77DD77', # green
                 '#FDFD96', # yellow
                 '#FF6961', # red
-                '#CFCFC4'] # gray
+            ]
 
-            explode = (0, 0, 0.1, 0)  # 突出显示'ANY'或'HIGH'
+            explode = (0, 0, 0.1)  # 突出显示'ANY'或'HIGH'
 
             # # 绘制饼图
             fig, ax = plt.subplots(figsize=(8, 8))
