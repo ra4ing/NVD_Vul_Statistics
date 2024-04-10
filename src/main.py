@@ -1,7 +1,5 @@
 from parse_html import *
 
-
-
 def get_data():
     for keyword in vul_keywords:
         for score in scores:
@@ -31,9 +29,14 @@ def analysis():
     analyzer = WebDataAnalyzer("data")
     analyzer.load_data()
 
+def plot_bar():
+    ploter = WebDataPloter("data")
+    ploter.plot_bar()
+
 if __name__ == '__main__':
     # get_data()
     # extract_csv()
     # plot_csv()
-    plot_pie()
+    # plot_pie()
     # plot_analysis()
+    plot_bar()

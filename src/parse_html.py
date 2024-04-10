@@ -1,4 +1,3 @@
-from enum import Enum
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -232,7 +231,7 @@ class WebDataPloter():
                     loc="center left",
                     bbox_to_anchor=(1, 0, 0.5, 1))
 
-            plt.title(f'{vul_name} Security Level Proportions in 2022', fontsize=16, fontweight='bold')
+            plt.title(f'{vul_name} Security Level in 2022', fontsize=16, fontweight='bold')
 
             plt.tight_layout()
             plt_filename = f"plot/{vul_name.replace(' ', '_')}_Security_Level_Proportions_in_2022.png"
@@ -289,3 +288,45 @@ class WebDataPloter():
         plt.tight_layout()
         plt_filename = f"plot/Vulnerable_Type_Proportions_in_2023.png"
         plt.savefig(plt_filename, dpi=1080)
+
+
+    def plot_bar(self):
+        vul_counts = {}
+        for vul_name, df in self.data.items():
+
+            df_2023 = df[df['Year'] == 2023]  # Select records for 2023
+            vul_counts[vul_name] = df_2023['ANY'].sum()  # Sum the 'Total' column for each vulnerability type
+        
+        labels = list(vul_counts.keys())
+        counts = list(vul_counts.values())
+    
+         # Define colors for each vulnerability type
+        colors = [
+            '#ff6666',  # bright red
+            '#3498db',  # blue
+            '#2ecc71',  # green
+            '#f1c40f',  # yellow
+            '#9b59b6',  # purple
+            '#34495e',  # deep blue
+            '#95a5a6',  # grey
+        ]
+
+        plt.figure(figsize=(10, 6))
+        bars = plt.bar(labels, counts, color=colors)
+
+        plt.xlabel('Vulnerability Type', fontsize=14, fontweight='bold')
+        plt.ylabel('Count', fontsize=14, fontweight='bold')
+        plt.title('Vulnerability Counts by Type in 2023', fontsize=16, fontweight='bold')
+        plt.xticks(rotation=45, fontsize=12)
+        plt.yticks(fontsize=12)
+
+        # Adding grid
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+        # Adding data labels on top of each bar
+        for bar in bars:
+            yval = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width()/2, yval, int(yval), ha='center', va='bottom', fontsize=10, fontweight='bold')
+
+        plt.tight_layout()
+        plt.savefig("plot/vulnerability_counts_2023.png", dpi=1080)
